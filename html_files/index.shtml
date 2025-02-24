@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Home</title>
+  <link rel="icon" type="image/x-icon" href="house2.ico">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      background-color: #3949ab;
+      width: 100%;
+      padding: 15px;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+    }
+    .top-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+    .floorplan {
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      min-width: 350px;
+    }
+    .scene {
+      perspective: 800px;
+    }
+    .house {
+      position: relative;
+      width: 350px;
+      height: 350px;
+      transform-style: preserve-3d;
+      transform: rotateX(45deg) rotateY(0deg);
+      margin-top: -45px;
+    }
+    .room {
+      position: absolute;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      background: lightgray;
+      border: 2px solid black;
+      z-index: 1;
+    }
+    .room1 {
+      width: 50%;
+      height: 75%;
+      top: 0;
+      left: 0;
+    }
+    .room2 {
+      width: 50%;
+      height: 75%;
+      top: 0;
+      left: 50%;
+      background: lightblue;
+    }
+    .room3 {
+      width: 75%;
+      height: 25%;
+      top: 75%;
+      left: 0;
+      background: lightgreen;
+    }
+    .room4 {
+      width: 25%;
+      height: 25%;
+      top: 75%;
+      left: 75%;
+      background: lightcoral;
+    }
+    .room.lit {
+      background-color: #ebf0b6;
+      box-shadow: 0 0 20px #fff8b0, 0 0 40px #fff8b0;
+    }
+    .room-label {
+      position: absolute;
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      text-align: center;
+      width: 100%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .lamp {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: gray;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) translateZ(30px);
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      z-index: 999;
+      pointer-events: auto;
+    }
+    .lamp.on {
+      background-color: yellow;
+      box-shadow: 0 0 15px yellow, 0 0 30px yellow;
+    }
+    #quarto { top: calc(50% - 40px); left: 50%; }
+    #sala { top: calc(50% - 40px); left: 50%; }
+    #cozinha { top: calc(50% - 40px); left: 50%; }
+    #banheiro { top: calc(50% - 40px); left: 50%; }
+    .control-panel {
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 300px;
+      text-align: center;
+    }
+    .control-panel h2 {
+      color: #3949ab;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    .intensity-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+    .intensity-group:hover {
+      background: #e8f0fe;
+    }
+    .intensity-group .icon {
+      font-size: 24px;
+      width: 30px;
+      text-align: center;
+      color: #3949ab;
+    }
+    .intensity-group .control-label {
+      flex-grow: 1;
+      text-align: left;
+      font-weight: bold;
+      color: #555;
+      margin-left: 10px;
+    }
+    .intensity-group .value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #3949ab;
+      width: 50px;
+      text-align: right;
+    }
+    #refreshButton {
+      display: inline-block;
+      width: 200px;
+      background-color: #3949ab;
+      border: none;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 20px;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      color: #fff;
+      cursor: pointer;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Painel de Automação Residencial</h1>
+  </header>
+  <div class="top-container">
+    <!-- Painel da Planta Baixa -->
+    <div class="floorplan">
+      <div class="scene">
+        <div class="house">
+          <!--#quarto-->
+            <div class="room-label">Quarto</div>
+          </div>
+          <!--#sala-->
+            <div class="room-label">Sala</div>
+          </div>
+          <!--#cozinha-->
+            <div class="room-label">Cozinha</div>
+          </div>
+          <!--#banheiro-->
+            <div class="room-label">Banheiro</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Painel de Controle -->
+    <div class="control-panel">
+      <h2>Controles de Intensidade</h2>
+      <div class="intensity-group">
+        <span class="icon">🛏️</span>
+        <span class="control-label">Quarto</span>
+        <span class="value"><!--#q_int-->%</span>
+      </div>
+      <div class="intensity-group">
+        <span class="icon">🛋️</span>
+        <span class="control-label">Sala</span>
+        <span class="value"><!--#s_int-->%</span>
+      </div>
+      <div class="intensity-group">
+        <span class="icon">🍳</span>
+        <span class="control-label">Cozinha</span>
+        <span class="value"><!--#c_int-->%</span>
+      </div>
+      <div class="intensity-group">
+        <span class="icon">🚿</span>
+        <span class="control-label">Banheiro</span>
+        <span class="value"><!--#b_int-->%</span>
+      </div>    
+    </div>
+  </div>
+  <!-- Botão Atualizar -->
+  <a id="refreshButton" href="/index.shtml">Atualizar</a>
+
+  <script>
+    const quartoLamp = document.getElementById('quarto');
+    const banheiroLamp = document.getElementById('banheiro');
+    const salaLamp = document.getElementById('sala');
+    const cozinhaLamp = document.getElementById('cozinha');
+
+    quartoLamp.addEventListener('mousedown', function() {
+      const params = new URLSearchParams(window.location.search);
+      const led = params.get('quarto');
+      this.setAttribute('href', led === '1' ? '/led.cgi?quarto=0' : '/led.cgi?quarto=1');
+    });
+
+    banheiroLamp.addEventListener('mousedown', function() {
+      const params = new URLSearchParams(window.location.search);
+      const led = params.get('banheiro');
+      this.setAttribute('href', led === '1' ? '/led.cgi?banheiro=0' : '/led.cgi?banheiro=1');
+    });
+
+    salaLamp.addEventListener('mousedown', function() {
+      const params = new URLSearchParams(window.location.search);
+      const led = params.get('sala');
+      this.setAttribute('href', led === '1' ? '/led.cgi?sala=0' : '/led.cgi?sala=1');
+    });
+
+    cozinhaLamp.addEventListener('mousedown', function() {
+      const params = new URLSearchParams(window.location.search);
+      const led = params.get('cozinha');
+      this.setAttribute('href', led === '1' ? '/led.cgi?cozinha=0' : '/led.cgi?cozinha=1');
+    });
+  </script>
+</body>
+</html>
